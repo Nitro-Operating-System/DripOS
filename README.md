@@ -2,7 +2,7 @@
 [![][discord_image]][discord_link]
 
 An OS made for fun.
-NOTE: This is based off of this tutorial: https://github.com/cfenollosa/os-tutorial  
+NOTE: This is based off of this tutorial: https://github.com/cfenollosa/os-tutorial
 
 ## Usage:
 
@@ -18,7 +18,7 @@ make
 make run
 ```
 
-### Without Make
+#### Without Make
 Install QEMU for your distribution and download image file from the [latest release][release_link]
 
 Run
