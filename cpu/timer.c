@@ -1,69 +1,34 @@
 #include "timer.h"
 #include "isr.h"
 #include "ports.h"
-#include "../libc/function.h"
-#include "../drivers/screen.h"
-#include "sysState.h"
-#include "../drivers/keyboard.h"
-#include "../drivers/stdin.h"
-#include "../drivers/sound.h"
-#include "soundManager.h"
-#include "../libc/string.h"
+#include "state.h"
 
-u32 tick = 0;
-u32 prev = 0;
-int lSnd = 0;
-//int sndT = 0;
-int pSnd = 0;
+uint32_t current_tick = 0;
+uint32_t previous_tick = 0;
 
-static void timer_callback(registers_t regs) {
-	sys_state_manager();
-    tick++;
-    for (int i = 0; i < 256; i++) {
-        if (keytimeout[i] > 0) {
-            keytimeout[i] -= 1;
-        }
-    }
-    if (tick - pSnd > lSnd) {
-        nosound();
-        //kprint("Timed out");
-    }
-    //char done[24];
-    //int_to_ascii((int)tick, done);
-    //kprint(done);
-    //kprint("\n");
-    //if (sound_en == true) {
-    //    char done[24];
-    //    int_to_ascii((int)tick, done);
-    //    kprint(done);
-    //}
-    //key_handler();
-    UNUSED(regs);
+static void timer_callback(registers_t registers) {
+    sys_state_manager();
+
+    current_tick++;
 }
 
-void config_timer(u32 time) {
-    /* Get the PIT value: hardware clock at 1193180 Hz */
-    u32 divisor = 1193180 / time;
-    u8 low  = (u8)(divisor & 0xFF);
-    u8 high = (u8)( (divisor >> 8) & 0xFF);
-    /* Send the command */
-    port_byte_out(0x43, 0x36); /* Command port */
-    port_byte_out(0x40, low);
-    port_byte_out(0x40, high);
-    //kprint("Timer configured\n");
+void config_timer(uint32_t time) {
+    uint32_t divisor = 1193180 / time;
+    uint8_t low = (uint8_t) (divisor & 0xFF);
+    uint8_t high = (uint8_t) ((divisor >> 8) & 0xFF);
+
+    outb(0x43, 0x36);
+    outb(0x40, low);
+    outb(0x40, high);
 }
 
-void init_timer(u32 freq) {
-    /* Install the function we just wrote */
+void init_timer(uint32_t frequency) {
     register_interrupt_handler(IRQ0, timer_callback);
-    config_timer(freq);
+    config_timer(frequency);
 }
 
-void wait(u32 ticks) {
-	prev = tick;
-    //kprint("Waiting...\n");
-	while(tick - prev < ticks) {
-		
-	}
-    //kprint("Finished waiting\n");
+void wait(uint32_t ticks) {
+    previous_tick = current_tick;
+
+    while(current_tick - previous_tick < ticks);
 }

@@ -1,12 +1,11 @@
 #ifndef TIMER_H
 #define TIMER_H
 
-#include "types.h"
+#include "../libc/types.h"
 
-void init_timer(u32 freq);
-void wait(u32 ticks);
-u32 tick;
-int lSnd;
-int pSnd;
+void init_timer(uint32_t frequency);
+void wait(uint32_t ticks);
 
-#endif
+uint32_t current_tick;
+
+#endif //TIMER_H

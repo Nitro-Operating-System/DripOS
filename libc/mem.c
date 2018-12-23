@@ -1,33 +1,30 @@
 #include "mem.h"
 
-void memory_copy(u8 *source, u8 *dest, int nbytes) {
+void memcpy(uint8_t *source, uint8_t *destination, int size) {
     int i;
-    for (i = 0; i < nbytes; i++) {
-        *(dest + i) = *(source + i);
+
+    for(i = 0; i < size; i++) {
+        *(destination + i) = *(source + i);
     }
 }
 
-void memory_set(u8 *dest, u8 val, u32 len) {
-    u8 *temp = (u8 *)dest;
-    for ( ; len != 0; len--) *temp++ = val;
+void memset(uint8_t *destination, uint8_t value, uint32_t size) {
+    uint8_t *temp = (uint8_t *) destination;
+
+    for(; size!=0; size--) *temp++ = value;
 }
 
-/* This should be computed at link time, but a hardcoded
- * value is fine for now. Remember that our kernel starts
- * at 0x1000 as defined on the Makefile */
-u32 free_mem_addr = 0x10000;
-/* Implementation is just a pointer to some free memory which
- * keeps growing */
-u32 kmalloc(u32 size, int align, u32 *phys_addr) {
-    /* Pages are aligned to 4K, or 0x1000 */
-    if (align == 1 && (free_mem_addr & 0xFFFFF000)) {
+uint32_t free_mem_addr = 0x10000;
+
+uint32_t kmalloc(uint32_t size, int align, uint32_t *physical_address) {
+    if(align == 1 && (free_mem_addr & 0xFFFFF000)) {
         free_mem_addr &= 0xFFFFF000;
         free_mem_addr += 0x1000;
     }
-    /* Save also the physical address */
-    if (phys_addr) *phys_addr = free_mem_addr;
 
-    u32 ret = free_mem_addr;
-    free_mem_addr += size; /* Remember to increment the pointer */
-    return ret;
+    if(physical_address) *physical_address = free_mem_addr;
+
+    uint32_t value = free_mem_addr;
+    free_mem_addr += size;
+    return value;
 }
