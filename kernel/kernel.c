@@ -6,6 +6,9 @@
 // Drivers
 #include "../drivers/screen.h"
 
+// Lib
+#include "../libc/string.h"
+
 int state = 0;
 
 void main() {
@@ -17,5 +20,6 @@ void main() {
     logoDraw();
     wait(100);
     clear_screen();
-    kprint("test");
+
+    kprint("DripOS v0.0.1");
 }
